@@ -1,7 +1,21 @@
 /* ── Dynamic Progress Bar for Elementor ────────────────────────────────────── */
 
+/* Force full width inside Elementor Flexbox Containers & Sections */
+.elementor-widget-dpb_progress_bar {
+    width: 100%;
+    max-width: 100%;
+    flex-grow: 1;
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+.elementor-widget-dpb_progress_bar .elementor-widget-container {
+    width: 100%;
+}
+
 .dpb-progress-bar-widget {
     width: 100%;
+    box-sizing: border-box;
 }
 
 /* Header: title + value */

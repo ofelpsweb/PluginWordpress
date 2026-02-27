@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dynamic Progress Bar for Elementor
  * Description: Custom progress bar widget with Google Sheets integration for real-time tracking.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Felipe
  * Requires Plugins: elementor
  * Text Domain: dynamic-progress-bar
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'DPB_VERSION', '1.0.0' );
+define( 'DPB_VERSION', '1.0.1' );
 define( 'DPB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DPB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
