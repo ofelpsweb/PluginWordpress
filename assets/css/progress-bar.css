@@ -1,0 +1,94 @@
+/* ── Dynamic Progress Bar for Elementor ────────────────────────────────────── */
+
+.dpb-progress-bar-widget {
+    width: 100%;
+}
+
+/* Header: title + value */
+.dpb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+
+.dpb-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.dpb-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+/* Track (background) */
+.dpb-bar-track {
+    width: 100%;
+    height: 20px;
+    background-color: #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Fill (progress) */
+.dpb-bar-fill {
+    height: 100%;
+    background-color: #8b5cf6;
+    border-radius: inherit;
+    transition: width 0.6s ease-out;
+    position: relative;
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Striped effect */
+.dpb-bar-fill.dpb-striped {
+    background-image: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.15) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.15) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 40px 40px;
+}
+
+/* Animated stripes */
+.dpb-bar-fill.dpb-striped-animated {
+    animation: dpb-stripe-move 1.5s linear infinite;
+}
+
+@keyframes dpb-stripe-move {
+    0% {
+        background-position: 40px 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
+}
+
+/* Smooth fill animation class (added by JS) */
+.dpb-bar-fill.dpb-animating {
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Pulse when reaching 100% */
+.dpb-bar-fill.dpb-complete {
+    animation: dpb-pulse 2s ease-in-out infinite;
+}
+
+@keyframes dpb-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.85;
+    }
+}
