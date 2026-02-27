@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dynamic Progress Bar for Elementor
  * Description: Custom progress bar widget with Google Sheets integration for real-time tracking.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Felipe
  * Requires Plugins: elementor
  * Text Domain: dynamic-progress-bar
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'DPB_VERSION', '1.0.1' );
+define( 'DPB_VERSION', '1.0.2' );
 define( 'DPB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DPB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
@@ -97,21 +97,30 @@ function dpb_ajax_refresh_progress() {
     $spreadsheet_id = sanitize_text_field( wp_unslash( $_POST['spreadsheet_id'] ?? '' ) );
     $sheet_name     = sanitize_text_field( wp_unslash( $_POST['sheet_name'] ?? '' ) );
     $cell           = sanitize_text_field( wp_unslash( $_POST['cell'] ?? '' ) );
+    $range          = sanitize_text_field( wp_unslash( $_POST['range'] ?? '' ) );
+    $source         = sanitize_text_field( wp_unslash( $_POST['source'] ?? 'sheets_cell' ) );
     $goal           = absint( $_POST['goal'] ?? 100 );
     $cache_minutes  = absint( $_POST['cache_minutes'] ?? 5 );
 
-    if ( empty( $spreadsheet_id ) || empty( $cell ) ) {
-        wp_send_json_error( [ 'message' => 'Missing parameters.' ] );
+    if ( empty( $spreadsheet_id ) ) {
+        wp_send_json_error( [ 'message' => 'Missing spreadsheet ID.' ] );
     }
 
     $handler = new \DPB\Sheets_Handler();
-    $value   = $handler->get_cell_value( $spreadsheet_id, $sheet_name, $cell, $cache_minutes );
+    $current = false;
 
-    if ( $value === false ) {
+    if ( $source === 'sheets_rows' && ! empty( $range ) ) {
+        $current = $handler->count_rows( $spreadsheet_id, $sheet_name, $range, $cache_minutes );
+    } elseif ( ! empty( $cell ) ) {
+        $value   = $handler->get_cell_value( $spreadsheet_id, $sheet_name, $cell, $cache_minutes );
+        $current = $value !== false ? floatval( $value ) : false;
+    }
+
+    if ( $current === false ) {
         wp_send_json_error( [ 'message' => 'Could not fetch data from Google Sheets.' ] );
     }
 
-    $current    = floatval( $value );
+    $current    = floatval( $current );
     $percentage = $goal > 0 ? min( round( ( $current / $goal ) * 100, 1 ), 100 ) : 0;
 
     wp_send_json_success( [

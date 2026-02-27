@@ -107,33 +107,45 @@
                 nonce: dpbAjax.nonce,
                 spreadsheet_id: spreadsheetId,
                 sheet_name: sheetName,
+                source: source,
                 goal: goal,
                 cache_minutes: cacheMinutes,
             };
 
             if (source === 'sheets_cell') {
-                ajaxData.cell = $widget.data('cell');
-            } else if (source === 'sheets_rows') {
-                ajaxData.cell = $widget.data('range');
+                ajaxData.cell = $widget.data('cell') || '';
+            }
+            if (source === 'sheets_rows') {
+                ajaxData.range = $widget.data('range') || '';
             }
 
             setInterval(function () {
-                $.post(dpbAjax.ajaxurl, ajaxData, function (response) {
-                    if (response.success && response.data) {
-                        var newPct = parseFloat(response.data.percentage) || 0;
+                $.post(dpbAjax.ajaxurl, ajaxData)
+                    .done(function (response) {
+                        if (response.success && response.data) {
+                            var newPct = parseFloat(response.data.percentage);
 
-                        // Only update if value changed.
-                        if (newPct !== percentage) {
-                            percentage = newPct;
-                            animateBar($widget, percentage, 600);
+                            // Guard: ignore invalid or NaN responses.
+                            if (isNaN(newPct) || newPct < 0) {
+                                return;
+                            }
 
-                            var text = formatValue(response.data, format, suffix, remainingText);
-                            updateValue($widget, text);
+                            // Only update if value actually changed.
+                            if (newPct !== percentage) {
+                                percentage = newPct;
+                                animateBar($widget, percentage, 600);
 
-                            $widget.data('percentage', percentage);
+                                var text = formatValue(response.data, format, suffix, remainingText);
+                                updateValue($widget, text);
+
+                                $widget.data('percentage', percentage);
+                            }
                         }
-                    }
-                });
+                        // On error response: keep current value (don't reset to 0).
+                    })
+                    .fail(function () {
+                        // Network/nonce error: silently keep current value.
+                    });
             }, refreshInterval * 1000);
         }
     }
